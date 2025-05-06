@@ -1,10 +1,10 @@
 // questions:
 //     -> do we need jalr or just jal
 
-module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, clk, immediate, curr_PC, mispedict, instruction);
+module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, clk, immediate, curr_PC, mispredict, instruction);
     input reset, clk;
-    input mispedict;
-    signed input [31:0] immediate; //immediate from branch instructions
+    input mispredict;
+    input [31:0] immediate; //immediate from branch instructions
     input [31:0] curr_PC; //the PC this moment, taken directly from IFID
     input [31:0] instruction; //32-bit instruction from IFID
     reg [1:0] current_state, next_state;
@@ -37,12 +37,12 @@ module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, cl
     end  
 
     //FSM combination block (state changing)
-    always @(current_state) begin
+    always @(current_state or instruction or immediate or mispredict or curr_PC) begin
         case (current_state)
             TRACK: begin 
                 if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin
                     // immediate<0 and loop_size<0 so we must imm>=loop_size
-                    if((immediate<0) && (immediate>=LOOP_SIZE)) begin
+                    if((immediate[31]<1'b1) && (immediate>=LOOP_SIZE)) begin
                         main_branch_pc = curr_PC; // stores the position of the branch we use for our loop
                         next_state = BUFFERING;
                     end

@@ -1,9 +1,8 @@
 module FSM_testbench;
     reg reset, clk;
-    reg mispedict;
-    signed reg [31:0] immediate; //immediate from branch instructions
+    reg mispredict;
+    reg [31:0] immediate; //immediate from branch instructions
     reg [31:0] curr_PC; //the PC this moment, taken directly from IFID
-    reg [6:0] opcode; // 7 bit opcode for RISC V instructions
     reg [31:0] instruction; //32-bit instruction from IFID
     wire [31:0] new_pc;
     wire block_signal, flush, reuse_signal;
@@ -13,12 +12,11 @@ module FSM_testbench;
         .new_pc(new_pc),
         .flush(flush),
         .block_signal(block_signal),
-        .reuse_signal(reuse_signal),
         .reset(reset),
         .clk(clk),
         .immediate(immediate),
         .curr_PC(curr_PC),
-        .mispedict(mispedict),
+        .mispredict(mispredict),
         .instruction(instruction)
     );
 
@@ -28,7 +26,7 @@ module FSM_testbench;
     initial begin
         clk=1'b0;
         reset=1'b0;
-        mispedict=1'b0;
+        mispredict=1'b0;
         #5 instruction = 32'b00000000000000000000000000001111; // Example instruction
         #10 instruction = 32'b00000000000000000000000001101111; // JAL instruction
             immediate = -10; 
@@ -39,8 +37,8 @@ module FSM_testbench;
         #10 curr_PC = 32'h00000008; // Example current PC value
         #10 curr_PC = 32'h00000020; // Example current PC value
             instruction = 32'b00000000000000000000000001101111;
-        #50 mispedict = 1'b1; // Set mispredict signal 
-        $finish 
+        #50 mispredict = 1'b1; // Set mispredict signal 
+        $finish;
     end
 
 endmodule
