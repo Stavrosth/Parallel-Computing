@@ -1,0 +1,26 @@
+*.jou
+*.log
+*.str
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.webtalk/
+*.Xil/
+*.tmp/
+*.backup/
+*.vivado/
+*.data/
+*.sdk/
+# Xilinx project-specific auto files
+*.wdb
+*.xml
+*.pb
+*.dcp
+*.bin
+*.bit
+*.elf
+*.mem
+*.svf
+*.rpt

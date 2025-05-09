@@ -27,6 +27,9 @@ module FSM_testbench;
         clk=1'b0;
         reset=1'b0;
         mispredict=1'b0;
+        #10 reset = 1'b1;
+        #10 reset = 1'b0;
+
         #5 instruction = 32'b00000000000000000000000000001111; // Example instruction
         #10 instruction = 32'b00000000000000000000000001101111; // JAL instruction
             immediate = -10; 

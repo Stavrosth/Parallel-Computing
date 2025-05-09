@@ -1,36 +1,42 @@
 // questions:
 //     -> do we need jalr or just jal
 
-module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, clk, immediate, curr_PC, mispredict, instruction);
-    input reset, clk;
-    input mispredict;
-    input [31:0] immediate; //immediate from branch instructions
-    input [31:0] curr_PC; //the PC this moment, taken directly from IFID
-    input [31:0] instruction; //32-bit instruction from IFID
-    reg [1:0] current_state, next_state;
-    reg reuse_signal;
-    reg [31:0] main_branch_pc;//the position of the branch we use for our loop
+module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, curr_PC, mispredict, instruction, out_instruction);
+    input reset, clk, mispredict;
+    input signed [31:0] immediate; //immediate from branch instructions
+    input [31:0] curr_PC; //the PC this moment, taken directly from IF/ID
+    input [31:0] instruction; //32-bit instruction from IF/ID
     output reg [31:0] new_pc;
     output reg block_signal, flush;
+    reg reuse_signal;
+    reg [31:0] main_branch_pc;//the position of the branch we use for our loop
+    reg [1:0] current_state, next_state;
+    output [31:0] out_instruction;
+
+    // BRAM signals
+    reg write_enable;
+    reg [5:0] write_address, read_address;
 
     //FSM STATES
     parameter TRACK = 2'b00, BUFFERING = 2'b01, REUSE = 2'b10, RESET = 2'b11;
 
-    //remove this when implemented to RISC V
+    /*** remove this when implemented to RISC V ***/
     //then we will get the opcode from the include file 
     parameter JAL_OPCODE=  7'b1101111,
               BTYPE_OPCODE=7'b1100011,
               JALR_OPCODE= 7'b1100111;
 
-    //loop size (instructions) in order to be suitable for loop buffering
-    parameter LOOP_SIZE = -27;
-    
+    parameter LOOP_SIZE = -27; //number of instructions able to be stored in the bram
+
     //FSM sequential block
     always @(posedge clk or posedge reset) begin
         if (reset == 1'b1) begin
             block_signal <= 1'b0;
             flush <= 1'b0;
             reuse_signal <= 1'b0;
+            write_enable <= 1'b0;
+            main_branch_pc <= 32'd0;
+            new_pc <= 32'd0;
             current_state <= TRACK;
         end else
             current_state <= next_state;
@@ -42,24 +48,28 @@ module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, cl
             TRACK: begin 
                 if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin
                     // immediate<0 and loop_size<0 so we must imm>=loop_size
-                    if((immediate[31]<1'b1) && (immediate>=LOOP_SIZE)) begin
+                    if((immediate[31]==1'b1) && (immediate>=LOOP_SIZE)) begin
                         main_branch_pc = curr_PC; // stores the position of the branch we use for our loop
                         next_state = BUFFERING;
                     end
                 end else
                     next_state = current_state;
             end
-            BUFFERING: begin
-                if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin //check that loop is a basic bloc
-                    if (main_branch_pc != curr_PC)// make sure the branch is not the one of our loop
+            BUFFERING: begin               
+                if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin //check that loop is a basic block
+                    if (main_branch_pc != curr_PC) begin// make sure the branch is not the one of our loop
+                        write_enable = 1'b0;
                         next_state = RESET;
-                    else begin
+                    end else begin
                         block_signal = 1'b1;
-                        new_pc= main_branch_pc+4;
+                        new_pc = main_branch_pc+4;
+                        write_enable = 1'b0;
                         next_state = REUSE;
                     end
-                end else
+                end else begin
+                    write_enable = 1'b1;
                     next_state = current_state;
+                end
             end
             REUSE:begin
                 if(mispredict == 1'b1) begin
@@ -73,16 +83,43 @@ module stream_loop_detector(new_pc, flush, block_signal, reuse_signal, reset, cl
                 end
             end
             RESET: begin
-                // RESETS BRAM
                 flush = 1'b0;
                 next_state = TRACK;
             end
-            default: next_state = TRACK;
+            default: begin 
+                flush = 1'b0;
+                block_signal = 1'b0;
+                reuse_signal = 1'b0;
+                write_enable = 1'b0;
+                main_branch_pc = 32'd0;
+                new_pc = 32'd0;
+            end
         endcase
     end
 
-    /**
-     * Always block with reuse signal that accesses BRAM
-     */
+    //Always block that manages read signals for bram
+    always @(posedge clk or posedge reset) begin
+        if(reset == 1'b1)
+            read_address <= 6'd0;
+        else if(reuse_signal == 1'b1) begin
+            if(main_branch_pc == curr_PC)
+                read_address <= 6'd0;
+            else
+                read_address <= read_address + 6'd1;
+        end
+    end
+
+    //Always block that manages write signals for bram
+    always @(posedge clk or posedge reset) begin
+        if(reset == 1'b1)
+            write_address <= 6'd0;
+        else if(write_enable == 1'b1)
+            write_address <= write_address + 6'd1;
+        else
+            write_address <= 6'd0;
+    end
+
+    // Accesses Bram
+    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(reuse_signal), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
