@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="37.500 ns"></ZoomStartTime>
-      <ZoomEndTime time="142.501 ns"></ZoomEndTime>
-      <Cursor1Time time="125.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="215.000 ns"></ZoomEndTime>
+      <Cursor1Time time="115.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="340"></NameColumnWidth>
-      <ValueColumnWidth column_width="155"></ValueColumnWidth>
+      <NameColumnWidth column_width="311"></NameColumnWidth>
+      <ValueColumnWidth column_width="113"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="22" />
    <wvobject fp_name="/FSM_testbench/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
@@ -40,6 +40,10 @@
       <obj_property name="ElementShortName">curr_PC[31:0]</obj_property>
       <obj_property name="ObjectShortName">curr_PC[31:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/main_branch_pc" type="array">
+      <obj_property name="ElementShortName">main_branch_pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">main_branch_pc[31:0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/FSM_testbench/instruction" type="array">
       <obj_property name="ElementShortName">instruction[31:0]</obj_property>
       <obj_property name="ObjectShortName">instruction[31:0]</obj_property>
@@ -47,6 +51,14 @@
    <wvobject fp_name="/FSM_testbench/new_pc" type="array">
       <obj_property name="ElementShortName">new_pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">new_pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/current_state" type="array">
+      <obj_property name="ElementShortName">current_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">current_state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/next_state" type="array">
+      <obj_property name="ElementShortName">next_state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">next_state[1:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/FSM_testbench/block_signal" type="logic">
       <obj_property name="ElementShortName">block_signal</obj_property>
@@ -56,16 +68,44 @@
       <obj_property name="ElementShortName">flush</obj_property>
       <obj_property name="ObjectShortName">flush</obj_property>
    </wvobject>
-   <wvobject fp_name="/FSM_testbench/reuse_signal" type="logic">
-      <obj_property name="ElementShortName">reuse_signal</obj_property>
-      <obj_property name="ObjectShortName">reuse_signal</obj_property>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/read_enable" type="logic">
+      <obj_property name="ElementShortName">read_enable</obj_property>
+      <obj_property name="ObjectShortName">read_enable</obj_property>
    </wvobject>
-   <wvobject fp_name="/FSM_testbench/LSD/current_state" type="array">
-      <obj_property name="ElementShortName">current_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">current_state[1:0]</obj_property>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/write_enable" type="logic">
+      <obj_property name="ElementShortName">write_enable</obj_property>
+      <obj_property name="ObjectShortName">write_enable</obj_property>
    </wvobject>
-   <wvobject fp_name="/FSM_testbench/LSD/next_state" type="array">
-      <obj_property name="ElementShortName">next_state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">next_state[1:0]</obj_property>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/read_address" type="array">
+      <obj_property name="ElementShortName">read_address[5:0]</obj_property>
+      <obj_property name="ObjectShortName">read_address[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/write_address" type="array">
+      <obj_property name="ElementShortName">write_address[5:0]</obj_property>
+      <obj_property name="ObjectShortName">write_address[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/instruction" type="array">
+      <obj_property name="ElementShortName">instruction[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instruction[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/out_instruction" type="array">
+      <obj_property name="ElementShortName">out_instruction[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out_instruction[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/input_instruction_low" type="array">
+      <obj_property name="ElementShortName">input_instruction_low[15:0]</obj_property>
+      <obj_property name="ObjectShortName">input_instruction_low[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/input_instruction_upper" type="array">
+      <obj_property name="ElementShortName">input_instruction_upper[15:0]</obj_property>
+      <obj_property name="ObjectShortName">input_instruction_upper[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/out_instruction_low" type="array">
+      <obj_property name="ElementShortName">out_instruction_low[15:0]</obj_property>
+      <obj_property name="ObjectShortName">out_instruction_low[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/FSM_testbench/LSD/bram/out_instruction_upper" type="array">
+      <obj_property name="ElementShortName">out_instruction_upper[15:0]</obj_property>
+      <obj_property name="ObjectShortName">out_instruction_upper[15:0]</obj_property>
    </wvobject>
 </wave_config>

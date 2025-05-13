@@ -1,5 +1,3 @@
-// questions:
-//     -> do we need jalr or just jal
 
 module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, curr_PC, mispredict, instruction, out_instruction);
     input reset, clk, mispredict;
@@ -8,7 +6,7 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
     input [31:0] instruction; //32-bit instruction from IF/ID
     output reg [31:0] new_pc;
     output reg block_signal, flush;
-    reg reuse_signal;
+    reg read_enable;
     reg [31:0] main_branch_pc;//the position of the branch we use for our loop
     reg [1:0] current_state, next_state;
     output [31:0] out_instruction;
@@ -33,7 +31,7 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
         if (reset == 1'b1) begin
             block_signal <= 1'b0;
             flush <= 1'b0;
-            reuse_signal <= 1'b0;
+            read_enable <= 1'b0;
             write_enable <= 1'b0;
             main_branch_pc <= 32'd0;
             new_pc <= 32'd0;
@@ -43,43 +41,47 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
     end  
 
     //FSM combination block (state changing)
-    always @(current_state or instruction or immediate or mispredict or curr_PC) begin
+    always @(current_state or instruction or mispredict) begin
+        next_state = current_state;
         case (current_state)
             TRACK: begin 
-                if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin
+                if(instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JAL_OPCODE) begin//we used to have mispredict here too!!!
                     // immediate<0 and loop_size<0 so we must imm>=loop_size
                     if((immediate[31]==1'b1) && (immediate>=LOOP_SIZE)) begin
                         main_branch_pc = curr_PC; // stores the position of the branch we use for our loop
                         next_state = BUFFERING;
                     end
-                end else
-                    next_state = current_state;
+                end 
+                else
+                    next_state = TRACK;
             end
-            BUFFERING: begin               
-                if(instruction[6:0] == JAL_OPCODE || instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JALR_OPCODE) begin //check that loop is a basic block
+            BUFFERING: begin      
+                write_enable = 1'b1;//here because write_address +=1 when we==1
+                if(instruction[6:0] == BTYPE_OPCODE || instruction[6:0] == JAL_OPCODE) begin //check that loop is a basic block
                     if (main_branch_pc != curr_PC) begin// make sure the branch is not the one of our loop
                         write_enable = 1'b0;
                         next_state = RESET;
-                    end else begin
-                        block_signal = 1'b1;
+                    end
+                    else begin
                         new_pc = main_branch_pc+4;
-                        write_enable = 1'b0;
+                        block_signal = 1'b1;
                         next_state = REUSE;
                     end
-                end else begin
-                    write_enable = 1'b1;
-                    next_state = current_state;
+                end 
+                else begin
+                    next_state = BUFFERING;
                 end
             end
             REUSE:begin
+                write_enable = 1'b0;
                 if(mispredict == 1'b1) begin
                     block_signal = 1'b0;
                     flush = 1'b1;
-                    reuse_signal = 1'b0;
+                    read_enable = 1'b0;
                     next_state = RESET;
                 end else begin
-                    reuse_signal = 1'b1;
-                    next_state = current_state;
+                    read_enable = 1'b1;
+                    next_state = REUSE;
                 end
             end
             RESET: begin
@@ -89,10 +91,11 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
             default: begin 
                 flush = 1'b0;
                 block_signal = 1'b0;
-                reuse_signal = 1'b0;
+                read_enable = 1'b0;
                 write_enable = 1'b0;
                 main_branch_pc = 32'd0;
                 new_pc = 32'd0;
+                next_state=TRACK;
             end
         endcase
     end
@@ -101,11 +104,14 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
     always @(posedge clk or posedge reset) begin
         if(reset == 1'b1)
             read_address <= 6'd0;
-        else if(reuse_signal == 1'b1) begin
-            if(main_branch_pc == curr_PC)
+        else if(read_enable == 1'b0) begin
+            read_address <= 6'd0;
+        end else begin
+            if (main_branch_pc == curr_PC) begin
                 read_address <= 6'd0;
-            else
+            end else begin
                 read_address <= read_address + 6'd1;
+            end
         end
     end
 
@@ -120,6 +126,6 @@ module stream_loop_detector(new_pc, flush, block_signal, reset, clk, immediate, 
     end
 
     // Accesses Bram
-    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(reuse_signal), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
+    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule

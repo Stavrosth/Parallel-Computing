@@ -19,9 +19,26 @@ input clk, reset;
 input read_enable, write_enable;
 input [5:0] read_address, write_address;
 
+wire [13:0] contatenated_read_address;
+wire [13:0] contatenated_write_address;
+
+assign contatenated_read_address={8'd0, read_address};
+assign contatenated_write_address={8'd0, write_address};
+
+
 input [31:0] instruction;
 
 output [31:0] out_instruction;
+
+wire [15:0] input_instruction_low , input_instruction_upper;
+wire [15:0] out_instruction_low, out_instruction_upper;
+
+
+assign input_instruction_low=instruction[15:0];
+assign input_instruction_upper=instruction[31:16];
+
+assign out_instruction[15:0]=out_instruction_low;
+assign out_instruction[31:16]=out_instruction_upper;
 
 RAMB18E1 #(
    // Address Collision Mode: "PERFORMANCE" or "DELAYED_WRITE" 
@@ -131,23 +148,26 @@ RAMB18E1 #(
 )
 RAMB18E1_inst (
    // Port A Data: 16-bit (each) output: Port A data
-   .DOADO(out_instruction[15:0]),                 // 16-bit output: A port data/LSB data
+   .DOADO(out_instruction_low),                 // 16-bit output: A port data/LSB data
    // Port B Data: 16-bit (each) output: Port B data
-   .DOBDO(out_instruction[31:16]),                 // 16-bit output: B port data/MSB data
-   .ADDRARDADDR(read_address),     // 14-bit input: A port address/Read address
+   .DOBDO(out_instruction_upper),                 // 16-bit output: B port data/MSB data
+   .ADDRARDADDR(contatenated_read_address),     // 14-bit input: A port address/Read address
    .CLKARDCLK(clk),         // 1-bit input: A port clock/Read clock
    .ENARDEN(read_enable),             // 1-bit input: A port enable/Read enable
    // Port A Data: 16-bit (each) input: Port A data
-   .DIADI(instruction[15:0]),                 // 16-bit input: A port data/LSB data
+   .DIADI(input_instruction_low),                 // 16-bit input: A port data/LSB data
    // Port B Address/Control Signals: 14-bit (each) input: Port B address and control signals (write port
    // when RAM_MODE="SDP")
-   .ADDRBWRADDR(write_address),     // 14-bit input: B port address/Write address
+   .ADDRBWRADDR(contatenated_write_address),     // 14-bit input: B port address/Write address
    .CLKBWRCLK(clk),         // 1-bit input: B port clock/Write clock
    .ENBWREN(write_enable),             // 1-bit input: B port enable/Write enable
    .RSTREGB(reset),             // 1-bit input: B port register set/reset
-   .WEBWE(4'b0001),                 // 4-bit input: B port write enable/Write enable
+   .WEBWE(4'b1111),                 // 4-bit input: B port write enable/Write enable
    // Port B Data: 16-bit (each) input: Port B data
-   .DIBDI(instruction[31:16])                 // 16-bit input: B port data/MSB data
+   .DIBDI(input_instruction_upper),        // 16-bit input: B port data/MSB data
+   .REGCEAREGCE(1'b0),     // 1-bit input: A port register enable/Register enable
+   .RSTRAMARSTRAM(reset), // 1-bit input: A port set/reset
+   .RSTREGARSTREG(1'b0) // 1-bit input: A port register set/reset
 );
 
 // End of RAMB18E1_inst instantiation
