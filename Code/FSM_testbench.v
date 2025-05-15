@@ -9,6 +9,7 @@ module FSM_testbench;
     wire [31:0] new_pc;
     wire block_signal, flush, reuse_signal;
     wire [31:0] out_instruction;
+    integer i;
 
     // Instantiate the FSM module
     stream_loop_detector LSD (
@@ -32,8 +33,8 @@ module FSM_testbench;
         reset=1'b0;
         mispredict=1'b0;
         immediate=32'b0;
-        #5 reset = 1'b1;
-        #5 reset = 1'b0;
+        #10 reset = 1'b1;
+        #10 reset = 1'b0;
 
         // #5 instruction = 32'b00000000000000000000000000001111; // Example instruction
         // #5 instruction = 32'b00000000000000000000000001100011; // BRANCH instruction
@@ -48,38 +49,49 @@ module FSM_testbench;
         // #50 mispredict = 1'b1; // Set mispredict signal 
         // #5 mispredict=1'b0;
 
-        $display("[%0t] Starting loop iteration 1", $time);
-        #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP at 0x100
-        #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP at 0x104
-        #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP at 0x108
-        #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;  // BEQ x0,x0,-12 (branch to 0x100)
+        // $display("[%0t] Starting loop iteration 1", $time);
+        for (i = 0; i < 20; i = i + 1) begin
+            #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP at 0x100
+            #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP at 0x104
+            #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP at 0x108
+            #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;  
 
-        // Iteration 2
-        $display("[%0t] Starting loop iteration 2", $time);
-        #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP
-        #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP
-        #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP
-        #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
+            if (i == 4 || i == 8) begin
+                mispredict = 1'b1; // Set mispredict signal
+                #10 mispredict = 1'b0;
+            end
+        end
+        // #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP at 0x100
+        // #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP at 0x104
+        // #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP at 0x108
+        // #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;  // BEQ x0,x0,-12 (branch to 0x100)
 
-        // // Iteration 3 (Loop detector should be learning or have learned the loop)
+        // // Iteration 2
+        // // $display("[%0t] Starting loop iteration 2", $time);
+        // #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP
+        // #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP
+        // #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
+
+        // // // Iteration 3 (Loop detector should be learning or have learned the loop)
         // $display("[%0t] Starting loop iteration 3", $time);
         // #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
+        // #10 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
 
-        // // Iteration 4 (Loop detector might be streaming instructions now)
-        // $display("[%0t] Starting loop iteration 4 - expecting detector to be active", $time);
-        // #5 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
+        // // // Iteration 4 (Loop detector might be streaming instructions now)
+        // // $display("[%0t] Starting loop iteration 4 - expecting detector to be active", $time);
+        // #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;// BEQ (branch to 0x100)
 
         #20 mispredict = 1'b1; // Set mispredict signal 
-        #5 mispredict=1'b0;
+        #10 mispredict=1'b0;
 
-        // #5 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
-        // #5 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000104; instruction = 32'h00000013; // NOP
+        // #10 curr_PC = 32'h00000108; instruction = 32'h00000013; // NOP
         #100 $finish;
 
         

@@ -22,8 +22,8 @@ input [5:0] read_address, write_address;
 wire [13:0] contatenated_read_address;
 wire [13:0] contatenated_write_address;
 
-assign contatenated_read_address={8'd0, read_address};
-assign contatenated_write_address={8'd0, write_address};
+assign contatenated_read_address={read_address, 8'd0};
+assign contatenated_write_address={write_address, 8'd0};
 
 
 input [31:0] instruction;
