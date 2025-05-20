@@ -156,6 +156,7 @@ RAMB18E1_inst (
    .ENARDEN(read_enable),             // 1-bit input: A port enable/Read enable
    // Port A Data: 16-bit (each) input: Port A data
    .DIADI(input_instruction_low),                 // 16-bit input: A port data/LSB data
+
    // Port B Address/Control Signals: 14-bit (each) input: Port B address and control signals (write port
    // when RAM_MODE="SDP")
    .ADDRBWRADDR(contatenated_write_address),     // 14-bit input: B port address/Write address
@@ -167,7 +168,8 @@ RAMB18E1_inst (
    .DIBDI(input_instruction_upper),        // 16-bit input: B port data/MSB data
    .REGCEAREGCE(1'b0),     // 1-bit input: A port register enable/Register enable
    .RSTRAMARSTRAM(reset), // 1-bit input: A port set/reset
-   .RSTREGARSTREG(1'b0) // 1-bit input: A port register set/reset
+   .RSTREGARSTREG(1'b0), // 1-bit input: A port register set/reset
+   .RSTRAMB(reset)             // 1-bit input: B port set/reset
 );
 
 // End of RAMB18E1_inst instantiation
