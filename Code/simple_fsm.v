@@ -46,7 +46,7 @@ module simpleFSM(
               BTYPE_OPCODE = 7'b1100011;
               //JALR_OPCODE = 7'b1100111;
 
-    parameter LOOP_SIZE = -27;
+    parameter signed [31:0] LOOP_SIZE = -27;
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
@@ -65,8 +65,10 @@ module simpleFSM(
         
         case (current_state)
             TRACK: begin
+            //    flush= 1'b0;
                if(goto_buffering) begin
                     change_main_pc = 1'b1;
+                    write_enable = 1'b1;
                     next_state = BUFFERING;
                 end else begin
                     change_main_pc = 1'b0;
@@ -75,18 +77,20 @@ module simpleFSM(
             end
             BUFFERING: begin
                 change_main_pc = 1'b1;
-                write_enable = 1'b1;
-
+                // write_enable = 1'b1;
+                // flush = 1'b0;
                 if(opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
                     if (must_reset) begin // make sure the branch is not the one of our loop
                         next_state = RESET;
                     end
                     else begin
                         block_signal = 1'b1;
+
                         next_state = REUSE;
                     end
                 end
                 else begin
+                    write_enable = 1'b1;
                     next_state = BUFFERING;
                 end
             end
@@ -139,7 +143,8 @@ module simpleFSM(
         end else if(read_enable == 1'b0) begin
             read_address <= 6'd0;
         end else begin
-            if (read_address>>3 == (immediate[30:0])) begin
+            if ((read_address>>3) >= (~immediate +1)) begin
+                // $display("innn\n");
                 read_address <= 6'd0;
             end else begin
                 read_address <= read_address + 6'd8;
@@ -161,3 +166,8 @@ module simpleFSM(
     uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
+
+
+//possible post synthesis mistakes
+// lost fsm states because of optimization
+// loop_size, immediate comparison maybe smt with the negative numbers

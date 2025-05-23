@@ -144,7 +144,7 @@ RAMB18E1 #(
    .SIM_DEVICE("7SERIES"),
    // WriteMode: Value on output upon a write ("WRITE_FIRST", "READ_FIRST", or "NO_CHANGE")
    .WRITE_MODE_A("WRITE_FIRST"),
-   .WRITE_MODE_B("WRITE_FIRST")
+   .WRITE_MODE_B("NO_CHANGE")
 )
 RAMB18E1_inst (
    // Port A Data: 16-bit (each) output: Port A data
