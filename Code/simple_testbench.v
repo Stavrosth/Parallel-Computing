@@ -47,8 +47,8 @@ module FSM_testbench;
         //         mispredict = 1'b1; // Set mispredict signal
         //         #10 mispredict = 1'b0;
         //     end
-        // end
-#200
+       // end
+
         #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP at 0x100
         #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP at 0x104
         #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP at 0x108

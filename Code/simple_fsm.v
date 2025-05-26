@@ -28,9 +28,8 @@ module simpleFSM(
     
     reg [5:0] write_address, read_address;
 
-    wire [6:0] opcode = instruction[6:0];
-    // wire [6:0] out_opcode = out_instruction[6:0];
-    wire last_bit_immediate = immediate[31];
+    wire [6:0] opcode;
+
     wire mispredict_signal = mispredict;
     reg must_reset;
     wire goto_buffering;
@@ -44,7 +43,6 @@ module simpleFSM(
     //then we will get the opcode from the include file 
     parameter JAL_OPCODE =  7'b1101111,
               BTYPE_OPCODE = 7'b1100011;
-              //JALR_OPCODE = 7'b1100111;
 
     parameter signed [31:0] LOOP_SIZE = -27;
 
@@ -65,7 +63,6 @@ module simpleFSM(
         
         case (current_state)
             TRACK: begin
-            //    flush= 1'b0;
                if(goto_buffering) begin
                     change_main_pc = 1'b1;
                     write_enable = 1'b1;
@@ -78,7 +75,6 @@ module simpleFSM(
             BUFFERING: begin
                 change_main_pc = 1'b1;
                 // write_enable = 1'b1;
-                // flush = 1'b0;
                 if(opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
                     if (must_reset) begin // make sure the branch is not the one of our loop
                         next_state = RESET;
@@ -119,8 +115,9 @@ module simpleFSM(
     end
 
     // In case we detect a subloop
-    assign goto_buffering = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (last_bit_immediate == 1'b1) && (immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
-    
+    assign goto_buffering = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (immediate[31] == 1'b1) && (immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
+    assign opcode = instruction[6:0];
+
     always @(posedge clk) begin
         if(change_main_pc == 1'b0) begin
             main_branch_pc <= curr_PC;
@@ -133,7 +130,7 @@ module simpleFSM(
         end
 
         if (flush == 1'b1) begin
-            new_pc = main_branch_pc + 4;
+            new_pc <= main_branch_pc + 4;
         end
     end
 
@@ -166,8 +163,3 @@ module simpleFSM(
     uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
-
-
-//possible post synthesis mistakes
-// lost fsm states because of optimization
-// loop_size, immediate comparison maybe smt with the negative numbers
