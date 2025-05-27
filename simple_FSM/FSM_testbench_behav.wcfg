@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="FSM_testbench_behav.wdb" id="1">
+      <db_ref path="FSM_testbench_func_synth.wdb" id="1">
          <top_modules>
             <top_module name="FSM_testbench" />
             <top_module name="glbl" />
@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="330.001 ns"></ZoomEndTime>
-      <Cursor1Time time="0.001 ns"></Cursor1Time>
+      <ZoomStartTime time="50.434 ns"></ZoomStartTime>
+      <ZoomEndTime time="287.835 ns"></ZoomEndTime>
+      <Cursor1Time time="100.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="311"></NameColumnWidth>
-      <ValueColumnWidth column_width="88"></ValueColumnWidth>
+      <NameColumnWidth column_width="239"></NameColumnWidth>
+      <ValueColumnWidth column_width="110"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="3" />
    <wvobject fp_name="group192" type="group">
@@ -54,12 +54,12 @@
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/FSM_testbench/mlk/current_state" type="array">
-         <obj_property name="ElementShortName">current_state[1:0]</obj_property>
-         <obj_property name="ObjectShortName">current_state[1:0]</obj_property>
+         <obj_property name="ElementShortName">current_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">current_state[2:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/FSM_testbench/mlk/next_state" type="array">
-         <obj_property name="ElementShortName">next_state[1:0]</obj_property>
-         <obj_property name="ObjectShortName">next_state[1:0]</obj_property>
+         <obj_property name="ElementShortName">next_state[2:0]</obj_property>
+         <obj_property name="ObjectShortName">next_state[2:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/FSM_testbench/mlk/main_branch_pc" type="array">
          <obj_property name="ElementShortName">main_branch_pc[31:0]</obj_property>
@@ -77,9 +77,17 @@
          <obj_property name="ElementShortName">flush</obj_property>
          <obj_property name="ObjectShortName">flush</obj_property>
       </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/change_main_pc" type="logic">
-         <obj_property name="ElementShortName">change_main_pc</obj_property>
-         <obj_property name="ObjectShortName">change_main_pc</obj_property>
+      <wvobject fp_name="/FSM_testbench/mlk/goto_buffering" type="logic">
+         <obj_property name="ElementShortName">goto_buffering</obj_property>
+         <obj_property name="ObjectShortName">goto_buffering</obj_property>
+      </wvobject>
+      <wvobject fp_name="/FSM_testbench/mlk/reg_immediate" type="array">
+         <obj_property name="ElementShortName">reg_immediate[31:0]</obj_property>
+         <obj_property name="ObjectShortName">reg_immediate[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/FSM_testbench/mlk/opcode" type="array">
+         <obj_property name="ElementShortName">opcode[6:0]</obj_property>
+         <obj_property name="ObjectShortName">opcode[6:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group182" type="group">
@@ -90,41 +98,13 @@
          <obj_property name="ElementShortName">read_enable</obj_property>
          <obj_property name="ObjectShortName">read_enable</obj_property>
       </wvobject>
+      <wvobject fp_name="/FSM_testbench/mlk/bram/out_instruction_OBUF" type="array">
+         <obj_property name="ElementShortName">out_instruction_OBUF[31:0]</obj_property>
+         <obj_property name="ObjectShortName">out_instruction_OBUF[31:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/FSM_testbench/mlk/bram/write_enable" type="logic">
          <obj_property name="ElementShortName">write_enable</obj_property>
          <obj_property name="ObjectShortName">write_enable</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/read_address" type="array">
-         <obj_property name="ElementShortName">read_address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">read_address[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/write_address" type="array">
-         <obj_property name="ElementShortName">write_address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">write_address[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/instruction" type="array">
-         <obj_property name="ElementShortName">instruction[31:0]</obj_property>
-         <obj_property name="ObjectShortName">instruction[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/input_instruction_low" type="array">
-         <obj_property name="ElementShortName">input_instruction_low[15:0]</obj_property>
-         <obj_property name="ObjectShortName">input_instruction_low[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/input_instruction_upper" type="array">
-         <obj_property name="ElementShortName">input_instruction_upper[15:0]</obj_property>
-         <obj_property name="ObjectShortName">input_instruction_upper[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/out_instruction" type="array">
-         <obj_property name="ElementShortName">out_instruction[31:0]</obj_property>
-         <obj_property name="ObjectShortName">out_instruction[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/out_instruction_low" type="array">
-         <obj_property name="ElementShortName">out_instruction_low[15:0]</obj_property>
-         <obj_property name="ObjectShortName">out_instruction_low[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/FSM_testbench/mlk/bram/out_instruction_upper" type="array">
-         <obj_property name="ElementShortName">out_instruction_upper[15:0]</obj_property>
-         <obj_property name="ObjectShortName">out_instruction_upper[15:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
