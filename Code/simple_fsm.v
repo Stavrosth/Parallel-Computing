@@ -200,6 +200,6 @@ module simpleFSM(
     // Used to Allow the BRAM to write the first instruction of the loop
     assign change_address_first = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
 
-    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable((write_enable == 1'b1 && change_address == 1'b1) || change_address_first == 1'b1), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
+    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
