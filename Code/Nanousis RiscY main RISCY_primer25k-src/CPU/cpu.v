@@ -134,6 +134,14 @@ wire trap_in_ID;
 // reg trap_in_EX=0;
 // reg trap_in_MEM=0;
 
+/* STREAM LOOP DETECTOR */
+reg block_signal_detector, flush_detector;
+wire [31:0] out_instruction_detector, new_pc_detector;
+
+
+//////////////////////////////////////
+
+
 
 assign PC_out = PC;
 assign instr = instr_in;
@@ -152,11 +160,12 @@ begin
 	end
 	else if (write_pc == 1'b1)
 	begin
-		PC <= PC_new;
-	end
-	else
-	begin
-		// PC <= PC_IF2;
+		if(block_signal_detector == 1'b1)
+		begin
+			PC<=new_pc_detector;
+		end else begin
+			PC <= PC_new;
+		end
 	end
 end
 
@@ -262,7 +271,10 @@ begin
 	else begin
 		// used to hold bubble in the pipeline. You loose an extra cycle here
 		// This is so that the instruction memory can notice the jump
-		if ((bubble_ifid_delayed||bubble_ifid == 1'b1)) begin
+		if (block_signal_detector == 1'b1) begin							//////////////////////////////////////////////////////////////
+			IFID_instr 		<= out_instruction_detector;								//////////////////////////////////////////////////////////////
+			IFID_PC			<= 32'hffffffff;								//////////////////////////////////////////////////////////////
+		end else if ((bubble_ifid_delayed||bubble_ifid == 1'b1)) begin
 			IFID_instr		<= 32'b0;
 			IFID_PC			<= 32'hffffffff;
 		end 
@@ -287,6 +299,19 @@ assign instr_rd		= IFID_instr[11:7];
 assign syscall		= (IDEX_Jump==1'b0 & 
 						IDEX_JumpJALR==1'b0&opcode == `I_ENV_FORMAT & funct3==0) ? 1'b1 : 1'b0;
 
+/**************************************** FSM for loop detection  **********************************/
+simpleFSM stream_loop_detector(.clk(clock),
+							   .reset(reset),
+							   .curr_PC(IFID_PC),
+							   .instruction(IFID_instr),
+							   .immediate(signExtend),
+							   .block_signal(block_signal_detector),
+							   .mispredict(branch_taken),
+							   .flush(flush_detector),
+							   .new_pc(new_pc_detector),
+							   .out_instruction(out_instruction_detector)
+);
+/****************************************** END *******************************************/
 
 always @(*) begin
 	if(reg_type == 2'b01) begin
@@ -497,6 +522,7 @@ always@(posedge clock or negedge reset)begin
 
 end
 wire flushPipeline;
+/////////////////////////////assign flushPipeline = (flush == 1'b1) ? 1'b1 : flush_pipeline;
 
 CSRFile csrFile(
 	.clock(clock),
@@ -564,7 +590,9 @@ control_stall_id control_stall_id (
 	.int_trap		(int_taken),
 	.flushPipeline	(flushPipeline),
 	.memReady		(memReady),
-	.PCSrc			(PCSrc));
+	.PCSrc			(PCSrc),
+	.flush_detector (flush),
+	.block_signal_detector (block_signal_detector));
 
 /************************ Execution Unit (EX)  ***********************************/
 

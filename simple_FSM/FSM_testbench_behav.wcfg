@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="FSM_testbench_time_synth.wdb" id="1">
+      <db_ref path="FSM_testbench_func_synth.wdb" id="1">
          <top_modules>
             <top_module name="FSM_testbench" />
             <top_module name="glbl" />
@@ -13,7 +13,7 @@
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
       <ZoomEndTime time="650.001 ns"></ZoomEndTime>
-      <Cursor1Time time="217.913 ns"></Cursor1Time>
+      <Cursor1Time time="350.100 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="239"></NameColumnWidth>

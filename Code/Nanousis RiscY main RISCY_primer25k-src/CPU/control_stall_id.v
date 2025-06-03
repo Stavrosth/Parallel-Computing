@@ -33,7 +33,10 @@ module  control_stall_id(
 	input int_trap,
 	input trap_in_ID,
 	input flushPipeline,
-	input PCSrc);
+	input PCSrc,
+	input flush_detector,
+	input block_signal_detector
+	);
 
 reg memStalled=0;
 reg suppressTrap=0;
@@ -110,14 +113,14 @@ begin
 		write_pc	= 1'b1;
 	end
 	else
-	if (PCSrc == 1'b11) begin // Taken Branch in MEM stage
+	if (PCSrc == 1'b11 || flush_detector == 1'b1) begin // Taken Branch in MEM stage
 		state = 4'd7;
 		bubble_ifid		= 1'b1;
 		bubble_idex		= 1'b1;
 		bubble_exmem	= 1'b1;
 		write_pc	= 1'b1;
 	end
-	if(flushPipeline == 1'b1) begin
+	if(flushPipeline == 1'b1 || block_signal_detector == 1'b1) begin
 		state = 4'd8;
 		bubble_ifid		= 1'b1;
 		// write_pc	= 1'b0;
