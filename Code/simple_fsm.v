@@ -35,8 +35,7 @@ module simpleFSM(
     parameter TRACK = 3'b000,    // State encoding for the FSM
               BUFFERING = 3'b001,
               WAIT = 3'b010, 
-              REUSE = 3'b011, 
-              RESET = 3'b100;
+              REUSE = 3'b011;
 
     parameter JAL_OPCODE =  7'b1101111, // remove this when implemented to RISC V 
               BTYPE_OPCODE = 7'b1100011; // then we will get the opcode from the include file
@@ -80,10 +79,9 @@ module simpleFSM(
             BUFFERING: begin
                 if(opcode== BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
                     if (must_reset) begin // make sure the branch is not the one of our loop
-                        next_state = RESET;
+                        next_state = TRACK;
                     end
                     else begin
-                        block_signal = 1'b1;
                         next_state = WAIT;
                     end
                 end
@@ -101,15 +99,12 @@ module simpleFSM(
             REUSE: begin
                 if(mispredict_signal == 1'b1) begin
                     flush = 1'b1;
-                    next_state = RESET;
+                    next_state = TRACK;
                 end else begin
                     block_signal = 1'b1;
                     read_enable = 1'b1;
                     next_state = REUSE;
                 end
-            end
-            RESET: begin /****** MAY BE REMOVED ******/
-                next_state = TRACK;
             end
             default: begin 
                 next_state = current_state;
@@ -205,6 +200,6 @@ module simpleFSM(
     // Used to Allow the BRAM to write the first instruction of the loop
     assign change_address_first = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
 
-    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
+    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable((write_enable == 1'b1 && change_address == 1'b1) || change_address_first == 1'b1), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
