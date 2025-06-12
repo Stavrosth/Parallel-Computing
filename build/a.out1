@@ -1,20 +1,24 @@
-**** module/scope: stream_loop_detector_moore
-     Flip-Flops   : 3
-     Logic Gates  : 344
-     EQUALITY[32]: 4 units
-     MAGNITUDE[32]: 1 units
-     MUX[2]: 10 slices
-     LPM[5]: 4 unaccounted
-     LPM[40]: 1 unaccounted
-     LOG[13]: 2 unaccounted
+**** module/scope: horizontal
+     Flip-Flops   : 23
+     Logic Gates  : 249
+     ADDER[1]: 1 units
+     ADDER[10]: 1 units
+     ADDER[11]: 1 units
+     EQUALITY[11]: 1 units
+     EQUALITY[32]: 1 units
+     MAGNITUDE[11]: 3 units
+     MUX[2]: 25 slices
+     LOG[13]: 1 unaccounted
      LOG[14]: 1 unaccounted
 **** TOTALS
-     Flip-Flops   : 3
-     Logic Gates  : 344
-     EQUALITY[32]: 4 units
-     MAGNITUDE[32]: 1 units
-     MUX[2]: 10 slices
-     LPM[5]: 4 unaccounted
-     LPM[40]: 1 unaccounted
-     LOG[13]: 2 unaccounted
+     Flip-Flops   : 23
+     Logic Gates  : 249
+     ADDER[1]: 1 units
+     ADDER[10]: 1 units
+     ADDER[11]: 1 units
+     EQUALITY[11]: 1 units
+     EQUALITY[32]: 1 units
+     MAGNITUDE[11]: 3 units
+     MUX[2]: 25 slices
+     LOG[13]: 1 unaccounted
      LOG[14]: 1 unaccounted
