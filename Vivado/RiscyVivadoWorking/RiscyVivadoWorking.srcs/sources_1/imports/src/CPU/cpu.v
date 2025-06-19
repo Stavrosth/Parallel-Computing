@@ -298,6 +298,8 @@ assign instr_rd		= IFID_instr[11:7];
 // just OR it with syscall and give it to the control stall unit
 assign syscall		= (IDEX_Jump==1'b0 & 
 						IDEX_JumpJALR==1'b0&opcode == `I_ENV_FORMAT & funct3==0) ? 1'b1 : 1'b0;
+wire mispredict;
+assign mispredict = (EXMEM_Branch && (!branch_taken)) ? 1'b1 : 1'b0;
 
 /**************************************** FSM for loop detection  **********************************/
 simpleFSM stream_loop_detector(.clk(clock),
@@ -306,7 +308,7 @@ simpleFSM stream_loop_detector(.clk(clock),
 							   .instruction(IFID_instr),
 							   .immediate(signExtend),
 							   .block_signal(block_signal_detector),
-							   .mispredict(branch_taken),
+							   .mispredict(mispredict),
 							   .flush(flush_detector),
 							   .new_pc(new_pc_detector),
 							   .out_instruction(out_instruction_detector)

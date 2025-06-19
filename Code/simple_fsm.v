@@ -46,8 +46,8 @@ module simpleFSM(
     reg read_enable, write_enable;
 
     // FSM sequential block
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge clk or negedge reset) begin
+        if (!reset) begin
             current_state <= TRACK;
         end else begin
             current_state <= next_state;
@@ -120,21 +120,21 @@ module simpleFSM(
     end
 
     // Was added because the synthesis was not working
-    always@(posedge clk or posedge reset) begin
-        if(reset) begin
-            opcode<=0;
-            reg_immediate <= 0;
-            mispredict_signal <= 0;
+    always@(posedge clk or negedge reset) begin
+        if(!reset) begin
+            opcode <= 7'b0;
+            reg_immediate <= 32'b0;
+            mispredict_signal <= 1'b0;
         end else begin
-            opcode<=instruction[6:0];
+            opcode <= instruction[6:0];
             reg_immediate <= immediate;
             mispredict_signal <= mispredict;
         end
     end
     
     // Always block that manages the pc_to_store, goto_buffering and branch_immediate
-    always@(posedge clk or posedge reset) begin   
-        if(reset) begin
+    always@(posedge clk or negedge reset) begin   
+        if(!reset) begin
             pc_to_store <= 32'd0;
             goto_buffering<=1'b0;
             branch_immediate <= 32'd0;
@@ -149,8 +149,8 @@ module simpleFSM(
     end
 
     //Always block that manages the main branch pc and new pc
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge clk or negedge reset) begin
+        if (!reset) begin
             main_branch_pc <= 32'd0;
             new_pc <= 32'd0;
         end else if(change_main_pc == 1'b1) begin
@@ -161,8 +161,8 @@ module simpleFSM(
     end
 
     //Always block that manages the must_reset signal
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge clk or negedge reset) begin
+        if (!reset) begin
             must_reset <= 1'b0;
         end else if (main_branch_pc == curr_PC) begin
             must_reset <= 1'b0;
@@ -172,8 +172,8 @@ module simpleFSM(
     end
 
     //Always block that manages read signals for bram
-    always @(posedge clk or posedge reset) begin
-        if(reset == 1'b1) begin
+    always @(posedge clk or negedge reset) begin
+        if(!reset == 1'b1) begin
             read_address <= 6'd0;
         end else if(read_enable == 1'b0) begin
             read_address <= 6'b0;
@@ -187,8 +187,8 @@ module simpleFSM(
     end
 
     //Always block that manages write signals for bram
-    always @(posedge clk or posedge reset) begin
-        if(reset == 1'b1) begin
+    always @(posedge clk or negedge reset) begin
+        if(!reset == 1'b1) begin
             write_address <= 6'd0;
         end else if((write_enable == 1'b1 && change_address == 1'b1) || change_address_first == 1'b1) begin
             write_address <= write_address + 6'd8;
@@ -200,6 +200,6 @@ module simpleFSM(
     // Used to Allow the BRAM to write the first instruction of the loop
     assign change_address_first = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
 
-    uop_cache bram(.clk(clk), .reset(reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
+    uop_cache bram(.clk(clk), .reset(!reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));
 
 endmodule
