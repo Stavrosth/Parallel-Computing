@@ -46,17 +46,17 @@ initial begin
     data_mem[18] = 32'hffef0f13;
     data_mem[19] = 32'h00af1023;
     data_mem[20] = 32'hfff28293;
-    data_mem[21] = 32'hfe029ae3;
-    data_mem[22] = 32'h00000393;
-    data_mem[23] = 32'hfe0f0f13;
-    data_mem[24] = 32'h00af1023;
-    data_mem[25] = 32'h00138393;
-    data_mem[26] = 32'hffc3cae3;
-    data_mem[27] = 32'hf99ff06f;
-    data_mem[28] = 32'h0000006f;
-    data_mem[29] = 32'h00541023;
-    data_mem[30] = 32'h00240413;
-    data_mem[31] = 32'h0000006f;
+    // data_mem[21] = 32'hfe029ae3;
+    data_mem[21] = 32'h00000393;
+    data_mem[22] = 32'hfe0f0f13;
+    data_mem[23] = 32'h00af1023;
+    data_mem[24] = 32'h00138393;
+    data_mem[25] = 32'hffc3cae3;
+    data_mem[26] = 32'hf9dff06f;
+    data_mem[27] = 32'h0000006f;
+    // data_mem[29] = 32'h00541023;
+    // data_mem[30] = 32'h00240413;
+    // data_mem[31] = 32'h0000006f;
 end
 
 localparam STATE_IDLE = 2'b00;
@@ -139,3 +139,34 @@ end
 
 
 endmodule
+
+/* SIMPLE FSM SIMPLE LOOP TESETBENCH
+04100513: addi a0, zero, 65 
+00150513: addi a0, a0, 1 
+880004b7: lui s1, -2013265920 
+04048913: addi s2, s1, 64 
+00000293: addi t0, zero, 0 
+02000313: addi t1, zero, 32 
+00000393: addi t2, zero, 0 
+00400e13: addi t3, zero, 4 
+00548f33: add t5, s1, t0 
+00af1023: sh a0, 0(t5) 
+00228293: addi t0, t0, 2 
+fe62cae3: blt t0, t1, -12 
+020f0f13: addi t5, t5, 32 
+00af1023: sh a0, 0(t5) 
+00138393: addi t2, t2, 1 
+ffc3cae3: blt t2, t3, -12 
+00f00293: addi t0, zero, 15 
+fe0f0f13: addi t5, t5, -32 
+ffef0f13: addi t5, t5, -2 
+00af1023: sh a0, 0(t5) 
+fff28293: addi t0, t0, -1 
+00000393: addi t2, zero, 0 
+fe0f0f13: addi t5, t5, -32 
+00af1023: sh a0, 0(t5) 
+00138393: addi t2, t2, 1 
+ffc3cae3: blt t2, t3, -12 
+f9dff06f: jal zero, -100 
+0000006f: jal zero, 0 
+*/

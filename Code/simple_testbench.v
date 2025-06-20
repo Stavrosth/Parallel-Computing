@@ -11,7 +11,7 @@ module FSM_testbench;
     wire [31:0] new_pc;
     wire [31:0] out_instruction;
 
-    simpleFSM mlk(
+    simpleFSM loop_detector(
         .clk(clk),
         .reset(reset),
         .curr_PC(curr_PC),
