@@ -32,8 +32,8 @@ module FSM_testbench;
         reset=1'b0;
         immediate=32'b0;
         mispredict = 1'b0;
-        #10 reset = 1'b1;
         #10 reset = 1'b0;
+        #10 reset = 1'b1;
 // #1000
         // Test cases can be added here
         // For example, you can toggle the reset signal and observe the FSM behavior
