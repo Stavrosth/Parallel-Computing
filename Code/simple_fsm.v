@@ -3,6 +3,7 @@ module simpleFSM(
     reset,
     curr_PC,
     instruction, 
+    bubble_idex,
     immediate,
     block_signal,
     mispredict,
@@ -12,7 +13,7 @@ module simpleFSM(
     );
     
     /***** INPUTS & OUTPUTS******/
-    input clk, reset, mispredict;
+    input clk, reset, mispredict,bubble_idex;
     input [31:0] immediate, instruction, curr_PC;
     output reg block_signal, flush;
     output reg [31:0] new_pc;
@@ -42,7 +43,7 @@ module simpleFSM(
               
     /***** BRAM VARIABLES ******/    
     output [31:0] out_instruction;
-    reg [5:0] write_address, read_address;
+    reg [8:0] write_address, read_address;
     reg read_enable, write_enable;
 
     // FSM sequential block
@@ -174,14 +175,15 @@ module simpleFSM(
     //Always block that manages read signals for bram
     always @(posedge clk or negedge reset) begin
         if(!reset == 1'b1) begin
-            read_address <= 6'd0;
+            read_address <= 9'h0;
         end else if(read_enable == 1'b0) begin
-            read_address <= 6'b0;
+            read_address <= 9'h20;
         end else begin
-            if ((read_address>>3) >= (~branch_immediate +1)) begin
-                read_address <= 6'h0;
-            end else begin
-                read_address <= read_address + 6'd8;
+            if ((read_address>>3) >= (~branch_immediate +1)+4) begin
+                read_address <= 9'h20;
+            end
+            else if(~bubble_idex) begin
+                read_address <= read_address + 9'd8;
             end
         end
     end
@@ -189,11 +191,11 @@ module simpleFSM(
     //Always block that manages write signals for bram
     always @(posedge clk or negedge reset) begin
         if(!reset == 1'b1) begin
-            write_address <= 6'd0;
+            write_address <= 9'd0;
         end else if((write_enable == 1'b1 && change_address == 1'b1) || change_address_first == 1'b1) begin
-            write_address <= write_address + 6'd8;
+            write_address <= write_address + 9'd8;
         end else begin
-            write_address <= 6'd0;
+            write_address <= 9'd0;
         end
     end
 
