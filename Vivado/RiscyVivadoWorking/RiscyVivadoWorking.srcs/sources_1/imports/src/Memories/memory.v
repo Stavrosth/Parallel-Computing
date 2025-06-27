@@ -25,14 +25,7 @@ localparam data_size=1024;
 
 // Initialize memory with instructions
 initial begin
-    // data_mem[0]  = 32'h03200293; //addi t0, 50, 0 
-    // data_mem[1]  = 32'h02000313; //addi t1, zero, 32 
-    // data_mem[2]  = 32'h00000393; //addi t2, zero, 0
-    // data_mem[3]  = 32'h00400e13; //addi t3, zero, 4
-    // data_mem[4]  = 32'hfff28293; //addi t0, t0, -1
-    // data_mem[5]  = 32'hFEC29CE3; //BNE T0 ZERO 16
-    // data_mem[6]  = 32'h03200293; //addi t0, 50, 0 
-    // data_mem[7]  = 32'h; //
+    // Case 1
     data_mem[0]  = 32'h04100513;
     data_mem[1]  = 32'h00150513;
     data_mem[2]  = 32'h880004b7;
@@ -44,27 +37,63 @@ initial begin
     data_mem[8]  = 32'h00548f33;
     data_mem[9]  = 32'h00af1023;
     data_mem[10] = 32'h00228293;
-    // data_mem[11] = 32'hfe62cae3;
+    data_mem[11] = 32'hfe62cae3;
     data_mem[12] = 32'h020f0f13;
     data_mem[13] = 32'h00af1023;
     data_mem[14] = 32'h00138393;
-    // data_mem[15] = 32'hffc3cae3;
+    data_mem[15] = 32'hffc3cae3;
     data_mem[16] = 32'h00f00293;
     data_mem[17] = 32'hfe0f0f13;
     data_mem[18] = 32'hffef0f13;
     data_mem[19] = 32'h00af1023;
     data_mem[20] = 32'hfff28293;
-    // data_mem[21] = 32'hfe029ae3;
-    data_mem[21] = 32'h00000393;
-    data_mem[22] = 32'hfe0f0f13;
-    data_mem[23] = 32'h00af1023;
-    data_mem[24] = 32'h00138393;
-    data_mem[25] = 32'hffc3cae3;
-    data_mem[26] = 32'hf9dff06f;
-    data_mem[27] = 32'h0000006f;
-    // data_mem[29] = 32'h00541023;
-    // data_mem[30] = 32'h00240413;
-    // data_mem[31] = 32'h0000006f;
+    data_mem[21] = 32'hfe029ae3;
+    data_mem[22] = 32'h00000393;
+    data_mem[23] = 32'hfe0f0f13;
+    data_mem[24] = 32'h00af1023;
+    data_mem[25] = 32'h00138393;
+    data_mem[26] = 32'hffc3cae3;
+    data_mem[27] = 32'hf9dff06f;
+
+    // Case 2
+    // data_mem[0]  = 32'h04100513;
+    // data_mem[1]  = 32'h00150513;
+    // data_mem[3]  = 32'h04048913;
+    // data_mem[4]  = 32'h00000293;
+    // data_mem[5]  = 32'h02000313;
+    // data_mem[6]  = 32'h00000393;
+    // data_mem[7]  = 32'h00400e13;
+    // data_mem[8]  = 32'h00548f33;
+    // data_mem[9]  = 32'h00af1023;
+    // data_mem[10] = 32'h00228293;
+    // data_mem[11] = 32'h020f0f13;
+    // data_mem[12] = 32'h00af1023;
+    // data_mem[13] = 32'h00138393;
+    // data_mem[14] = 32'h00f00293;
+    // data_mem[15] = 32'hfe0f0f13;
+    // data_mem[16] = 32'hffef0f13;
+    // data_mem[17] = 32'h00af1023;
+    // data_mem[18] = 32'hfff28293;
+    // data_mem[19] = 32'h00000393;
+    // data_mem[20] = 32'hfe0f0f13;
+    // data_mem[21] = 32'h00af1023;
+    // data_mem[22] = 32'h00138393;
+    // data_mem[23] = 32'hfadff0ef;
+
+    // Case 3
+    data_mem[0]  = 32'h04100513;
+    data_mem[1]  = 32'h00150513;
+    data_mem[2]  = 32'h880004b7;
+    data_mem[3]  = 32'h04048913;
+    data_mem[4]  = 32'h00000293;
+    data_mem[5]  = 32'h02000313;
+    data_mem[6]  = 32'h00000393;
+    data_mem[7]  = 32'h40000e13;
+    data_mem[8] = 32'h00138393;
+    data_mem[9] = 32'hffc3cee3;
+    data_mem[10] = 32'hffef0f13;
+    data_mem[11] = 32'h00af1023;
+    data_mem[12] = 32'hfff28293;
 end
 
 localparam STATE_IDLE = 2'b00;
@@ -149,32 +178,32 @@ end
 endmodule
 
 /* SIMPLE FSM SIMPLE LOOP TESETBENCH
-04100513: addi a0, zero, 65 
-00150513: addi a0, a0, 1 
-880004b7: lui s1, -2013265920 
-04048913: addi s2, s1, 64 
-00000293: addi t0, zero, 0 
-02000313: addi t1, zero, 32 
-00000393: addi t2, zero, 0 
-00400e13: addi t3, zero, 4 
-00548f33: add t5, s1, t0 
-00af1023: sh a0, 0(t5) 
-00228293: addi t0, t0, 2 
-fe62cae3: blt t0, t1, -12 
-020f0f13: addi t5, t5, 32 
-00af1023: sh a0, 0(t5) 
-00138393: addi t2, t2, 1 
-ffc3cae3: blt t2, t3, -12 
-00f00293: addi t0, zero, 15 
-fe0f0f13: addi t5, t5, -32 
-ffef0f13: addi t5, t5, -2 
-00af1023: sh a0, 0(t5) 
-fff28293: addi t0, t0, -1 
-00000393: addi t2, zero, 0 
-fe0f0f13: addi t5, t5, -32 
-00af1023: sh a0, 0(t5) 
-00138393: addi t2, t2, 1 
-ffc3cae3: blt t2, t3, -12 
-f9dff06f: jal zero, -100 
-0000006f: jal zero, 0 
+0   04100513: addi a0, zero, 65 
+4   00150513: addi a0, a0, 1 
+8   880004b7: lui s1, -2013265920 
+12  04048913: addi s2, s1, 64 
+16  00000293: addi t0, zero, 0 
+20  02000313: addi t1, zero, 32 
+24  00000393: addi t2, zero, 0 
+28  00400e13: addi t3, zero, 4 
+32  00548f33: add t5, s1, t0 
+36  00af1023: sh a0, 0(t5) 
+40  00228293: addi t0, t0, 2 
+44  fe62cae3: blt t0, t1, -12 
+48  020f0f13: addi t5, t5, 32 
+52  00af1023: sh a0, 0(t5) 
+56  00138393: addi t2, t2, 1 
+60  ffc3cae3: blt t2, t3, -12 
+64  00f00293: addi t0, zero, 15 
+68  fe0f0f13: addi t5, t5, -32 
+72  ffef0f13: addi t5, t5, -2 
+76  00af1023: sh a0, 0(t5) 
+80  fff28293: addi t0, t0, -1 
+84  00000393: addi t2, zero, 0 
+88  fe0f0f13: addi t5, t5, -32 
+92  00af1023: sh a0, 0(t5) 
+96  00138393: addi t2, t2, 1 
+100 ffc3cae3: blt t2, t3, -12 
+104 f9dff06f: jal zero, -100 
+105 0000006f: jal zero, 0 
 */

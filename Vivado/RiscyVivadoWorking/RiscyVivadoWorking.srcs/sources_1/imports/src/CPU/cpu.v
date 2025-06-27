@@ -294,10 +294,13 @@ assign instr_rs1	= IFID_instr[19:15];
 assign csr_addr		= IFID_instr[31:20];
 assign instr_rs2	= IFID_instr[24:20];
 assign instr_rd		= IFID_instr[11:7];
+
 // can also probably add illegal instruction checks here as well
 // just OR it with syscall and give it to the control stall unit
 assign syscall		= (IDEX_Jump==1'b0 & 
 						IDEX_JumpJALR==1'b0&opcode == `I_ENV_FORMAT & funct3==0) ? 1'b1 : 1'b0;
+
+// Mispredict Signal used for the stream_loop_detector FSM
 wire mispredict;
 assign mispredict = (EXMEM_Branch && (!branch_taken)) ? 1'b1 : 1'b0;
 
@@ -311,7 +314,8 @@ simpleFSM stream_loop_detector(.clk(clock),
 							   .mispredict(mispredict),
 							   .flush(flush_detector),
 							   .new_pc(new_pc_detector),
-							   .out_instruction(out_instruction_detector)
+							   .out_instruction(out_instruction_detector),
+							   .bubble_idex(bubble_idex)
 );
 /****************************************** END *******************************************/
 
