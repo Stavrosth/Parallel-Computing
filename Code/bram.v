@@ -17,13 +17,13 @@ module uop_cache(clk, reset, instruction, read_enable, write_enable, read_addres
 input clk, reset;
 
 input read_enable, write_enable;
-input [5:0] read_address, write_address;
+input [8:0] read_address, write_address;
 
 wire [13:0] contatenated_read_address;
 wire [13:0] contatenated_write_address;
 
-assign contatenated_read_address={read_address, 8'd0};
-assign contatenated_write_address={write_address, 8'd0};
+assign contatenated_read_address={read_address, 5'd0};
+assign contatenated_write_address={write_address, 5'd0};
 
 
 input [31:0] instruction;
