@@ -25,6 +25,14 @@ localparam data_size=1024;
 
 // Initialize memory with instructions
 initial begin
+    // data_mem[0]  = 32'h03200293; //addi t0, 50, 0 
+    // data_mem[1]  = 32'h02000313; //addi t1, zero, 32 
+    // data_mem[2]  = 32'h00000393; //addi t2, zero, 0
+    // data_mem[3]  = 32'h00400e13; //addi t3, zero, 4
+    // data_mem[4]  = 32'hfff28293; //addi t0, t0, -1
+    // data_mem[5]  = 32'hFEC29CE3; //BNE T0 ZERO 16
+    // data_mem[6]  = 32'h03200293; //addi t0, 50, 0 
+    // data_mem[7]  = 32'h; //
     data_mem[0]  = 32'h04100513;
     data_mem[1]  = 32'h00150513;
     data_mem[2]  = 32'h880004b7;
@@ -36,11 +44,11 @@ initial begin
     data_mem[8]  = 32'h00548f33;
     data_mem[9]  = 32'h00af1023;
     data_mem[10] = 32'h00228293;
-    data_mem[11] = 32'hfe62cae3;
+    // data_mem[11] = 32'hfe62cae3;
     data_mem[12] = 32'h020f0f13;
     data_mem[13] = 32'h00af1023;
     data_mem[14] = 32'h00138393;
-    data_mem[15] = 32'hffc3cae3;
+    // data_mem[15] = 32'hffc3cae3;
     data_mem[16] = 32'h00f00293;
     data_mem[17] = 32'hfe0f0f13;
     data_mem[18] = 32'hffef0f13;
