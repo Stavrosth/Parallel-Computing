@@ -71,7 +71,10 @@ module FSM_testbench;
         #10 curr_PC = 32'h00000114; instruction = 32'h00000017; immediate = -0;// NOP at 0x104
         #10 curr_PC = 32'h00000118; instruction = 32'h00000018; immediate = -0;// NOP at 0x108
         #10 curr_PC = 32'h0000011C; instruction = 32'hFC000AE3; immediate = -12;
-        
+        #10 instruction = 32'h1; 
+        #10 instruction = 32'h2;
+        #10 instruction = 32'h0;
+        #10 instruction = 32'h0;
         #10 curr_PC = 32'h00000110; instruction = 32'h00000016; immediate = -0;// NOP at 0x100
         #10 curr_PC = 32'h00000114; instruction = 32'h00000017; immediate = -0;// NOP at 0x104
         #10 curr_PC = 32'h00000118; instruction = 32'h00000018; immediate = -0;// NOP at 0x108

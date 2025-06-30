@@ -25,7 +25,7 @@ localparam data_size=1024;
 
 // Initialize memory with instructions
 initial begin
-    // Case 1
+    // Case 1 3 small subloops
     data_mem[0]  = 32'h04100513;
     data_mem[1]  = 32'h00150513;
     data_mem[2]  = 32'h880004b7;
@@ -55,7 +55,7 @@ initial begin
     data_mem[26] = 32'hffc3cae3;
     data_mem[27] = 32'hf9dff06f;
 
-    // Case 2
+    // Case 2, change LOOP_SIZE to 96
     // data_mem[0]  = 32'h04100513;
     // data_mem[1]  = 32'h00150513;
     // data_mem[3]  = 32'h04048913;
@@ -80,20 +80,20 @@ initial begin
     // data_mem[22] = 32'h00138393;
     // data_mem[23] = 32'hfadff0ef;
 
-    // Case 3
-    data_mem[0]  = 32'h04100513;
-    data_mem[1]  = 32'h00150513;
-    data_mem[2]  = 32'h880004b7;
-    data_mem[3]  = 32'h04048913;
-    data_mem[4]  = 32'h00000293;
-    data_mem[5]  = 32'h02000313;
-    data_mem[6]  = 32'h00000393;
-    data_mem[7]  = 32'h40000e13;
-    data_mem[8] = 32'h00138393;
-    data_mem[9] = 32'hffc3cee3;
-    data_mem[10] = 32'hffef0f13;
-    data_mem[11] = 32'h00af1023;
-    data_mem[12] = 32'hfff28293;
+    // Case 3 one instruction loop
+    // data_mem[0]  = 32'h04100513;
+    // data_mem[1]  = 32'h00150513;
+    // data_mem[2]  = 32'h880004b7;
+    // data_mem[3]  = 32'h04048913;
+    // data_mem[4]  = 32'h00000293;
+    // data_mem[5]  = 32'h02000313;
+    // data_mem[6]  = 32'h00000393;
+    // data_mem[7]  = 32'h40000e13;
+    // data_mem[8] = 32'h00138393;
+    // data_mem[9] = 32'hffc3cee3;
+    // data_mem[10] = 32'hffef0f13;
+    // data_mem[11] = 32'h00af1023;
+    // data_mem[12] = 32'hfff28293;
 end
 
 localparam STATE_IDLE = 2'b00;

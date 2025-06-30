@@ -31,7 +31,7 @@ module simpleFSM(
     reg goto_buffering; // Detects a branch
     reg change_address; // Allows the bram to change address
     wire change_address_first; // Allows Bram to change address one cycle earlier in order to store the first instruction
-    parameter signed [31:0] LOOP_SIZE = -108; // MMAXIMUM LOOP SIZE accepted 
+    parameter signed [31:0] LOOP_SIZE = -96; // max size of the loop in bytes. The maximum value is 504 (64 instructions)
 
     parameter TRACK = 3'b000,    // State encoding for the FSM
               BUFFERING = 3'b001,
@@ -43,7 +43,7 @@ module simpleFSM(
     
     /***** BRAM VARIABLES ******/    
     output [31:0] out_instruction;
-    reg [8:0] write_address, read_address;
+    reg [8:0] write_address, read_address, read_address_temp;
     reg read_enable, write_enable;
 
     // FSM sequential block
@@ -78,8 +78,10 @@ module simpleFSM(
                 end
             end
             BUFFERING: begin
-                if(opcode== BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
-                    if (must_reset) begin // make sure the branch is not the one of our loop
+                if (mispredict_signal == 1'b1) begin // case of mispredict
+                    next_state = TRACK;
+                end else if(opcode== BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
+                    if (must_reset) begin // make sure the branch is not the one of our loop 
                         next_state = TRACK;
                     end
                     else begin
@@ -167,8 +169,6 @@ module simpleFSM(
             must_reset <= 1'b0;
         end else if (main_branch_pc == curr_PC) begin
             must_reset <= 1'b0;
-        end else if (main_branch_pc != curr_PC) begin
-            must_reset <= 1'b1;
         end
     end
 
@@ -177,10 +177,10 @@ module simpleFSM(
         if(!reset) begin
             read_address <= 9'h0;
         end else if(read_enable) begin
-            if ((read_address>>1) >= (~branch_immediate +1) + 16) begin // Indicates that we reached the end of the loop
+            if (((read_address>>1) >= (~branch_immediate +1) + 16) && bubble_idex == 1'b0) begin // Indicates that we reached the end of the loop
                 read_address <= 9'h20;
-            end else if(!bubble_idex == 1'b1) begin // Continues to the next instruction if there is no stall
-                read_address <= read_address + 9'd8;
+            end else if(bubble_idex == 1'b0) begin // Continues to the next instruction if there is no stall
+                read_address <= read_address + 9'd8; // Increments the read address by 4
             end
         end else begin // Resets the read address
             read_address <= 9'h20;
@@ -193,7 +193,7 @@ module simpleFSM(
             write_address <= 9'd0;
         end else if((write_enable == 1'b1) && (change_address == 1'b1 || change_address_first == 1'b1)) begin
             write_address <= write_address + 9'd8;
-        end else begin // Resets the read address
+        end else if (main_branch_pc == curr_PC) begin // Resets the read address
             write_address <= 9'd0;
         end
     end
