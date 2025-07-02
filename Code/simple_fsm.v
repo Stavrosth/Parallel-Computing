@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module simpleFSM(
     clk,
     reset,
@@ -177,9 +179,9 @@ module simpleFSM(
         if(!reset) begin
             read_address <= 9'h0;
         end else if(read_enable) begin
-            if (((read_address>>1) >= (~branch_immediate +1) + 16) && bubble_idex == 1'b0) begin // Indicates that we reached the end of the loop
+            if (((read_address>>1) >= (~branch_immediate +1) + 16) ) begin // Indicates that we reached the end of the loop
                 read_address <= 9'h20;
-            end else if(bubble_idex == 1'b0) begin // Continues to the next instruction if there is no stall
+            end else begin // Continues to the next instruction if there is no stall
                 read_address <= read_address + 9'd8; // Increments the read address by 4
             end
         end else begin // Resets the read address
@@ -193,7 +195,7 @@ module simpleFSM(
             write_address <= 9'd0;
         end else if((write_enable == 1'b1) && (change_address == 1'b1 || change_address_first == 1'b1)) begin
             write_address <= write_address + 9'd8;
-        end else if (main_branch_pc == curr_PC) begin // Resets the read address
+        end else if (main_branch_pc == curr_PC || flush == 1'b1) begin // Resets the read address
             write_address <= 9'd0;
         end
     end

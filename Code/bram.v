@@ -12,6 +12,8 @@
 // RAMB18E1: 18K-bit Configurable Synchronous Block RAM
 //           Artix-7
 // Xilinx HDL Language Template, version 2018.3
+`timescale 1ns/1ps
+
 
 module uop_cache(clk, reset, instruction, read_enable, write_enable, read_address, write_address, out_instruction);
 input clk, reset;
@@ -144,7 +146,7 @@ RAMB18E1 #(
    .SIM_DEVICE("7SERIES"),
    // WriteMode: Value on output upon a write ("WRITE_FIRST", "READ_FIRST", or "NO_CHANGE")
    .WRITE_MODE_A("WRITE_FIRST"),
-   .WRITE_MODE_B("NO_CHANGE")
+   .WRITE_MODE_B("WRITE_FIRST")
 )
 RAMB18E1_inst (
    // Port A Data: 16-bit (each) output: Port A data

@@ -271,9 +271,9 @@ begin
 	else begin
 		// used to hold bubble in the pipeline. You loose an extra cycle here
 		// This is so that the instruction memory can notice the jump
-		if (block_signal_detector == 1'b1) begin							//////////////////////////////////////////////////////////////
-			IFID_instr 		<= out_instruction_detector;								//////////////////////////////////////////////////////////////
-			IFID_PC			<= 32'hffffffff;								//////////////////////////////////////////////////////////////
+		if (block_signal_detector == 1'b1) begin							
+			IFID_instr 		<= out_instruction_detector;								
+			IFID_PC			<= 32'hffffffff;							
 		end else if ((bubble_ifid_delayed||bubble_ifid == 1'b1)) begin
 			IFID_instr		<= 32'b0;
 			IFID_PC			<= 32'hffffffff;
@@ -300,11 +300,13 @@ assign instr_rd		= IFID_instr[11:7];
 assign syscall		= (IDEX_Jump==1'b0 & 
 						IDEX_JumpJALR==1'b0&opcode == `I_ENV_FORMAT & funct3==0) ? 1'b1 : 1'b0;
 
+
+/**************************************** FSM for loop detection  **********************************/
+
 // Mispredict Signal used for the stream_loop_detector FSM
 wire mispredict;
 assign mispredict = (EXMEM_Branch && (!branch_taken)) ? 1'b1 : 1'b0;
 
-/**************************************** FSM for loop detection  **********************************/
 simpleFSM stream_loop_detector(.clk(clock),
 							   .reset(reset),
 							   .curr_PC(IFID_PC),
@@ -363,7 +365,6 @@ RegFile cpu_regs (
 	.rdA(rdA),
 	.rdB(rdB)
 );
-
 
 
 

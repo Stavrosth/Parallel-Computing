@@ -36,52 +36,39 @@ module FSM_testbench;
         bubble_idex = 1'b0;
         #10 reset = 1'b0;
         #10 reset = 1'b1;
-// #1000
-        // Test cases can be added here
-        // For example, you can toggle the reset signal and observe the FSM behavior
-
-        // for (integer i = 0; i < 20; i = i + 1) begin
-        //     #10 curr_PC = 32'h00000100; instruction = 32'h00000013; // NOP at 0x100
-        //     #10 curr_PC = 32'h00000104; instruction = 32'h00000014; // NOP at 0x104
-        //     #10 curr_PC = 32'h00000108; instruction = 32'h00000015; // NOP at 0x108
-        //     #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -3;  
-
-        //     if (i == 4 || i == 8) begin
-        //         mispredict = 1'b1; // Set mispredict signal
-        //         #10 mispredict = 1'b0;
-        //     end
-       // end
-        #100
+        
+        #100 // First loop
         #10 curr_PC = 32'h00000100; instruction = 32'h00000013; immediate = -0;// NOP at 0x100
         #10 curr_PC = 32'h00000104; instruction = 32'h00000014; immediate = -0;// NOP at 0x104
         #10 curr_PC = 32'h00000108; instruction = 32'h00000015; immediate = -0;// NOP at 0x108
         #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -12; 
-        #10 instruction = 32'h1; 
-        #10 instruction = 32'h2;
-        #10 instruction = 32'h0;
-        #10 instruction = 32'h0;
-        #10 curr_PC = 32'h00000100; instruction = 32'h00000013; immediate = -0;// NOP at 0x100
-        #10 curr_PC = 32'h00000104; instruction = 32'h00000014; immediate = -0;// NOP at 0x104
-        #10 curr_PC = 32'h00000108; instruction = 32'h00000015; immediate = -0;// NOP at 0x108
-        #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -12;
-        #10 instruction = 32'b0;// immediate=32'b0;// NOP at 0x100
+        #10 instruction = 32'h1;// Simulates the 4 instructions of delay present in the Risc-v 
+        #10 instruction = 32'h2;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 curr_PC = 32'h00000100; instruction = 32'h00000013; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h00000104; instruction = 32'h00000014; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h00000108; instruction = 32'h00000015; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -12;// issued again in order to buffer the instructions
+        #10 instruction = 32'b0;
+        #150 mispredict = 1'b1; // Wait till some iterations of this loop happen
         
-        #150 mispredict = 1'b1; // Wait for some time before the next iteration
+        // Second loop
         #10 curr_PC = 32'h00000110; instruction = 32'h00000016; immediate = -0; mispredict = 1'b0; // NOP at 0x100
         #10 curr_PC = 32'h00000114; instruction = 32'h00000017; immediate = -0;// NOP at 0x104
         #10 curr_PC = 32'h00000118; instruction = 32'h00000018; immediate = -0;// NOP at 0x108
         #10 curr_PC = 32'h0000011C; instruction = 32'hFC000AE3; immediate = -12;
-        #10 instruction = 32'h1; 
-        #10 instruction = 32'h2;
-        #10 instruction = 32'h0;
-        #10 instruction = 32'h0;
-        #10 curr_PC = 32'h00000110; instruction = 32'h00000016; immediate = -0;// NOP at 0x100
-        #10 curr_PC = 32'h00000114; instruction = 32'h00000017; immediate = -0;// NOP at 0x104
-        #10 curr_PC = 32'h00000118; instruction = 32'h00000018; immediate = -0;// NOP at 0x108
-        #10 curr_PC = 32'h0000011C; instruction = 32'hFC000AE3; immediate = -12; 
+        #10 instruction = 32'h1;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 instruction = 32'h2;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
+        #10 curr_PC = 32'h00000110; instruction = 32'h00000016; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h00000114; instruction = 32'h00000017; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h00000118; instruction = 32'h00000018; immediate = -0;// issued again in order to buffer the instructions
+        #10 curr_PC = 32'h0000011C; instruction = 32'hFC000AE3; immediate = -12;// issued again in order to buffer the instructions 
         #10 curr_PC = 32'h0; instruction = 32'h0; immediate = 0;// NOP at 0x100
         #50 mispredict = 1'b1;
-        #10 mispredict = 1'b1;
+        #10 mispredict = 1'b0;
         #100 $finish; // End simulation after some time
     end
 
