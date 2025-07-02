@@ -48,6 +48,9 @@ module simpleFSM(
     reg [8:0] write_address, read_address, read_address_temp;
     reg read_enable, write_enable;
 
+    // Used to Allow the BRAM to write the first instruction of the loop
+    assign change_address_first = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
+
     // FSM sequential block
     always @(posedge clk or negedge reset) begin
         if (!reset) begin
@@ -80,6 +83,8 @@ module simpleFSM(
                 end
             end
             BUFFERING: begin
+                write_enable = 1'b1;
+
                 if (mispredict_signal == 1'b1) begin // case of mispredict
                     next_state = TRACK;
                 end else if(opcode== BTYPE_OPCODE || opcode == JAL_OPCODE) begin //check that loop is a basic block
@@ -92,7 +97,6 @@ module simpleFSM(
                 end
                 else begin
                     change_address = 1'b1;
-                    write_enable = 1'b1;
                     next_state = BUFFERING;
                 end
             end
@@ -143,7 +147,7 @@ module simpleFSM(
             pc_to_store <= 32'd0;
             goto_buffering<=1'b0;
             branch_immediate <= 32'd0;
-        end else if(((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE))) begin
+        end else if(change_address_first) begin
             pc_to_store <= 32'd0;
             goto_buffering<=1'b1;
             branch_immediate<= reg_immediate;
@@ -199,9 +203,6 @@ module simpleFSM(
             write_address <= 9'd0;
         end
     end
-
-    // Used to Allow the BRAM to write the first instruction of the loop
-    assign change_address_first = ((opcode == BTYPE_OPCODE || opcode == JAL_OPCODE) && (reg_immediate[31] == 1'b1) && (reg_immediate >= LOOP_SIZE)) ? 1'b1 : 1'b0;
 
     // ΒΡΑΜ instantiation
     uop_cache bram(.clk(clk), .reset(!reset), .instruction(instruction), .read_enable(read_enable), .write_enable(write_enable), .read_address(read_address), .write_address(write_address), .out_instruction(out_instruction));

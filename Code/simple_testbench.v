@@ -42,7 +42,7 @@ module FSM_testbench;
         #10 curr_PC = 32'h00000104; instruction = 32'h00000014; immediate = -0;// NOP at 0x104
         #10 curr_PC = 32'h00000108; instruction = 32'h00000015; immediate = -0;// NOP at 0x108
         #10 curr_PC = 32'h0000010C; instruction = 32'hFC000AE3; immediate = -12; 
-        #10 instruction = 32'h1;// Simulates the 4 instructions of delay present in the Risc-v 
+        #10 instruction = 32'h1;// Simulates the 4 ` of delay present in the Risc-v 
         #10 instruction = 32'h2;// Simulates the 4 instructions of delay present in the Risc-v
         #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
         #10 instruction = 32'h0;// Simulates the 4 instructions of delay present in the Risc-v
